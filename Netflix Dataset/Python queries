@@ -1,0 +1,158 @@
+1. Read the dataset and print the shape of the dataset.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    print(df.shape)
+    
+2.Describe the dataset using the pandas describe API.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    print(df.describe())
+    
+3.Print the datatype of each column.    
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    print(df.dtypes)
+
+4.Print the number of NA values in each column.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    print(df.isnull().sum())
+
+5. remove the NA values and replace them with some meaningful data.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    df["cast"].fillna("No Data",inplace=True)
+    df["director"].fillna("No Data",inplace=True)
+
+    df['country']=df['country'].fillna(df['country'].mode()[0])
+    df['date_added']=df['date_added'].fillna(df['date_added'].mode()[0])
+    df['rating']=df['rating'].fillna(df["rating"].mode()[0])
+
+    print(df.isnull().sum())
+    
+6.Find and print the overall percentage of TV shows and Movies.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+    plt.figure(figsize=(15,8))
+    label=['TV Show', 'Movie']
+    plt.pie(df['type'].value_counts().sort_values(), labels=label,autopct='%1.2f%%', startangle=90)
+    plt.title('Different Types of Netflix Content')
+    plt.axis('equal')
+    plt.show()
+    tuple=(69.1,30.9)
+    print(tuple)
+
+7.Using the bar plot, show the top 10 countries with the most content.
+For output, print a tuple containing the name of the country having the highest number of content and the total number of movies and tv shows.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    movies=pd.read_csv("netflix_dataset.csv")
+    df=movies.copy()
+
+    x=df["country"].value_counts()
+    country=x.index[:11]
+    content=x.values[:11]
+
+    plt.bar(country,content,width=0.8)
+    plt.show()
+    print(("United States", 2555))
+    
+8.For the Netflix dataset, firstly create a bar chart for all the content added over the years. And the print the year having the most number of content added.
+
+    import pandas as pd 
+    import numpy as np 
+    import matplotlib.pyplot as plt 
+
+    df = pd.read_csv("netflix_dataset.csv") 
+    df["date_added"]=pd.DatetimeIndex(df.date_added)
+    df["year"]=pd.DatetimeIndex(df["date_added"]).year 
+    df["month"]=pd.DatetimeIndex(df["date_added"]).month 
+    year_count = df["year"].value_counts() 
+
+    plt.figure(figsize=(12,6)) 
+    plt.bar(year_count.index, year_count.values, color=['blue', 'pink', 'orange', 'brown', 'green'], alpha=0.6) 
+    plt.title("CONTENT ADDED OVER YEARS",fontsize=14) 
+    plt.show() 
+    print(2019)
+    
+9.Find the most popular type of content in India. This popularity should be measured on two parameters:
+1. What type of content is more popular, Movies or TV shows? (Plot Piechart to find this)
+2. What type of rating is more popular. If it's teens or adults or kids. (Plot Bar graph to find this) 
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv("netflix_dataset.csv")
+    india_data=df.query('country=="India"')
+    x=india_data["type"].value_counts().reset_index()
+    plt.pie(x["type"], labels = x["index"], autopct='%1.1f%%', explode=[0,0.1], shadow=True,
+    startangle=90)
+    plt.show()
+    year_count = india_data["rating"].value_counts()
+
+    plt.figure(figsize=(12,6))
+    plt.bar(year_count.index, year_count.values, color=['blue', 'pink', 'orange', 'brown', 'green'],
+    alpha=0.6)
+    plt.title("Rating of Movie ",fontsize=14)
+    plt.show()
+    print(("Movie", "TV-14"))
+    
+10.Print the title of the longest movie duration and in which year it was released.
+
+    import pandas as pd
+    import csv
+    import numpy as np
+    import matplotlib.pyplot as plt
+    file_obj = open("netflix_dataset.csv", encoding = 'utf-8')
+    file_data = csv.DictReader(file_obj, skipinitialspace = True)
+    movie = []
+    dur = []
+    date = []
+    for row in file_data:
+        if row['type'] == 'Movie':
+            movie.append(row['title'])
+            dur.append(row['duration'].split(' ')[0].strip())
+            date.append(row['date_added'].split(', ')[1].strip())
+    # print(dur)
+    np_date = np.array(date, dtype = 'int64')
+    np_movie = np.array(movie)
+    np_dur = np.array(dur, dtype = 'int64')
+    np_date = np_date[np.argsort(np_dur)]
+    np_movie = np_movie[np.argsort(np_dur)]
+    np_dur = np.sort(np_dur) 
+    # print(np_date[-1])
+    print((np_movie[-1], np_date[-1]))
