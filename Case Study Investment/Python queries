@@ -1,0 +1,213 @@
+1. Total number of fundings done in each year.
+Plot a line graph between year and number of fundings. Take year on x-axis and number of fundings on y-axis.
+Print year-wise total number of fundings also. Print years in ascending order.
+
+    import csv
+    import matplotlib.pyplot as plt
+
+    import collections
+    with open('startup_funding.csv', encoding ='UTF-8') as file_obj:
+        file_data = csv.DictReader(file_obj, skipinitialspace=True)
+
+        dct = {}
+        for row in file_data:
+            year = row['Date'][-4:]
+            if year in dct:
+                dct[year] += 1
+            else:
+                dct[year] = 1
+
+        ord_dct = collections.OrderedDict(sorted(dct.items()))                                  
+        plt.plot(list(ord_dct.keys()),list(ord_dct.values()))
+        plt.xlabel("Year")
+        plt.ylabel("Number of Fundings")
+        plt.title('Year VS "Number of Fundings"')
+        plt.show()
+
+        for i in ord_dct.keys():
+            print(i,end=" ")
+            print(ord_dct[i])
+        
+ 2.Find out which cities are generally chosen for starting a startup.Find top 10 Indian cities which have most number of startups ?
+Plot a pie chart and visualise it.Print the city name and number of startups in that city also.
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    #df['CityLocation'].dropna(inplace=True)
+    df.dropna(subset=["CityLocation"],inplace=True)
+    #df.tail()
+    def separateCity(city): 
+        return city.split('/')[0].strip() 
+    df['CityLocation']=df['CityLocation'].apply(separateCity) 
+    df[df['CityLocation']=='bangalore'] = 'Bangalore'
+    df[df['CityLocation']=='Delhi'] = 'New Delhi'
+
+    city = df['CityLocation']
+    city = city.value_counts()[:10]
+    city_name = city.index
+    no_of_str = city.values
+
+    plt.pie(no_of_str, labels=city_name, autopct='%.2f%%',counterclock=False)
+    plt.title('Number of startup in city')
+    plt.axis("equal")
+    plt.show()
+
+    for i in range(city_name.shape[0]):
+        print(city_name[i],no_of_str[i])
+    
+3.Find out if cities play any role in receiving funding.Find top 10 Indian cities with most amount of fundings received. 
+Find out percentage of funding each city has got (among top 10 Indian cities only).Print the city and percentage with 2 decimal place after rounding off.
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    df.dropna(subset=["CityLocation"],inplace=True)
+    def separateCity(city):
+        return city.split('/')[0].strip()
+    df['CityLocation'] = df['CityLocation'].apply(separateCity)
+    df['CityLocation'].replace("Delhi","New Delhi",inplace = True)
+    df['CityLocation'].replace("bangalore","Bangalore",inplace = True)
+
+    df['AmountInUSD'] = df['AmountInUSD'].apply(lambda x: float(str(x).replace(",","")))
+    df = df.groupby('CityLocation')['AmountInUSD'].sum()
+    df = df.sort_values(ascending = False)[0:10]
+    city = df.index
+    amount = df.values
+    explode = [0.2,0.2,0.2,0.2,0.1,0.1,0.2,0.2,0.2,0.2]
+    plt.pie(amount,labels = city,autopct='%0.2f',counterclock=False,startangle=90,explode =explode,radius=1.5)
+    plt.show()
+
+    percent = np.true_divide(amount,amount.sum())*100
+    for i in range(len(city)):
+        print(city[i],format(percent[i],'0.2f'))
+        
+4. There are 4 different type of investments. Find out percentage of amount funded for each investment type.Plot a pie chart to visualise.
+Print the investment type and percentage of amount funded with 2 decimal places after rounding off.
+
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    df['InvestmentType'].replace('SeedFunding','Seed Funding',inplace = True)
+    df['InvestmentType'].replace('PrivateEquity','Private Equity',inplace = True)
+    df['InvestmentType'].replace('DebtFunding','Debt Funding',inplace = True)
+    df['InvestmentType'].replace('Crowd funding','Crowd Funding',inplace = True)
+    df['AmountInUSD'] = df['AmountInUSD'].apply(lambda x: float(str(x).replace(",","")))
+
+    df = df.groupby('InvestmentType')['AmountInUSD'].sum()
+    df = df.sort_values(ascending = False)[:10]
+    investment = df.index
+    amount = df.values
+
+    plt.pie(amount,labels = investment,autopct='%0.2f',counterclock=False,startangle=110)
+    plt.show()
+
+    percent = np.true_divide(amount,amount.sum())*100
+    for i in range(len(investment)):
+        print(investment[i],format(percent[i],'0.2f'))
+        
+  5.Which type of companies got more easily funding. To answer this question, find -
+Top 5 industries and percentage of the total amount funded to that industry. (among top 5 only)
+Print the industry name and percentage of the amount funded with 2 decimal place after rounding off.
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    df['IndustryVertical'].replace('ECommerce','Ecommerce',inplace = True)
+    df['IndustryVertical'].replace('eCommerce','Ecommerce',inplace = True)
+    df['IndustryVertical'].replace('ecommerce','Ecommerce',inplace = True)
+    df['AmountInUSD'] = df['AmountInUSD'].apply(lambda x: float(str(x).replace(",","")))
+    df = df.groupby('IndustryVertical')['AmountInUSD'].sum()
+    df = df.sort_values(ascending = False)[:5]
+    industry = df.index
+    amount = df.values
+
+    plt.pie(amount,labels = industry,autopct='%0.2f',counterclock=False,startangle=100)
+    plt.show()
+    percent = np.true_divide(amount,amount.sum())*100
+    for i in range(len(industry)):
+        print(industry[i],format(percent[i],'0.2f'))
+        
+  6.Find top 5 startups with most amount of total funding.Print the startup name in descending order with respect to amount of funding.
+  
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    df['StartupName'].replace('Oyorooms','Oyo',inplace = True)
+    df['StartupName'].replace('OyoRooms','Oyo',inplace = True)
+    df['StartupName'].replace('Oyo Rooms','Oyo',inplace = True)
+    df['StartupName'].replace('OYO Rooms','Oyo',inplace = True)
+    df['StartupName'].replace('Olacabs','Ola',inplace = True)
+    df['StartupName'].replace('Ola Cabs','Ola',inplace = True)
+    df['StartupName'].replace('Olacabs','Ola',inplace = True)
+    df['StartupName'].replace('Flipkart.com','Flipkart',inplace = True)
+    df['StartupName'].replace('Paytm Marketplace','Paytm',inplace = True)
+
+    df['AmountInUSD'] = df['AmountInUSD'].apply(lambda x: float(str(x).replace(",","")))
+    df = df.groupby('StartupName')['AmountInUSD'].sum()
+    df = df.sort_values(ascending = False)[:5]
+    startup = df.index
+    for i in range(5):
+        print(startup[i])
+       
+  7.Find the top 5 startups who received the most number of funding rounds. That means, startups which got fundings maximum number of times.
+Print the startup name in descending order with respect to the number of funding round as integer value.
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    df = pd.read_csv('startup_funding.csv',encoding = 'utf-8')
+    df['StartupName'].replace('Oyorooms','Oyo',inplace = True)
+    df['StartupName'].replace('OyoRooms','Oyo',inplace = True)
+    df['StartupName'].replace('Oyo Rooms','Oyo',inplace = True)
+    df['StartupName'].replace('OYO Rooms','Oyo',inplace = True)
+    df['StartupName'].replace('Olacabs','Ola',inplace = True)
+    df['StartupName'].replace('Ola Cabs','Ola',inplace = True)
+    df['StartupName'].replace('Olacabs','Ola',inplace = True)
+    df['StartupName'].replace('Flipkart.com','Flipkart',inplace = True)
+    df['StartupName'].replace('Paytm Marketplace','Paytm',inplace = True)
+
+    totalfunding = df['StartupName'].value_counts()[:5]
+    startupname = totalfunding.index
+    count = totalfunding.values
+    for i in range(5):
+        print(startupname[i],count[i])
+        
+8.Find the Investors who have invested maximum number of times.Print the investor name and number of times invested as integer value.
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    data=pd.read_csv("startup_funding.csv")
+    d = data.copy()
+    d.InvestorsName.dropna(inplace = True)
+    def dict(a):
+        d = {}
+        for i in a:
+            if ',' not in i:
+                d[i] = d.get(i,0) + 1            
+            else:
+                c = i.strip().split(',');
+                for j in c:
+                    d[j.strip()] = d.get(j.strip(),0)+1
+        return d   
+    a = dict(d.InvestorsName)
+    dataset = pd.DataFrame(list(a.values()), list(a.keys()))
+    dataset = dataset.sort_values(by=[0] ,ascending = False)
+    investors = dataset.index[0:5]
+    times = dataset[0:5][0]
+    for i in range(1):
+        print(investors[i],times[i])
