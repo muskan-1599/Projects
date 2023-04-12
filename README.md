@@ -10,4 +10,10 @@ Here I have used SQL to analyze my dataset and find conclusions based on it.
 2. Case study Investment
 Used Python to carry out the analysis.
 
+3.Netflix Dataset
+Used Python to carry out the analysis.
+
+
+
+
 
